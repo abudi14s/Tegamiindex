@@ -225,7 +225,7 @@ modal.addEventListener('click', (e) => {
 btnWhatsapp.addEventListener('click', () => {
     if (!selectedGame || !selectedPrice) return;
     
-    const text = `Halo Admin NexusTopup, saya ingin order topup:\n\n*Game:* ${selectedGame.title}\n*Item:* ${selectedPrice.name}\n*Harga:* ${formatRupiah(selectedPrice.price)}\n\nMohon info pembayaran. Terima kasih.`;
+    const text = `Halo Admin Tegamiindex, saya ingin order topup:\n\n*Game:* ${selectedGame.title}\n*Item:* ${selectedPrice.name}\n*Harga:* ${formatRupiah(selectedPrice.price)}\n\nMohon info pembayaran. Terima kasih.`;
     const encodedText = encodeURIComponent(text);
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
     
