@@ -1,0 +1,240 @@
+// Data Dummy Games
+const games = [
+    {
+        id: 'mlbb',
+        title: 'Mobile Legends',
+        publisher: 'Moonton',
+        icon: 'https://play-lh.googleusercontent.com/ER-A9Lw3l5U8K4w7t1T3wUjYq9Z0O_w5_q1yT_vG98_v1l-0H2v_v-H1h9K9_R4=w240-h480-rw',
+        prices: [
+            { id: 'ml1', name: '86 Diamonds', price: 23000 },
+            { id: 'ml2', name: '172 Diamonds', price: 46000 },
+            { id: 'ml3', name: '257 Diamonds', price: 69000 },
+            { id: 'ml4', name: '706 Diamonds', price: 180000 },
+            { id: 'ml5', name: 'Twilight Pass', price: 135000 },
+            { id: 'ml6', name: 'Weekly Diamond Pass', price: 28000 }
+        ]
+    },
+    {
+        id: 'ff',
+        title: 'Free Fire',
+        publisher: 'Garena',
+        icon: 'https://play-lh.googleusercontent.com/NE5Tj_b5_y2_k_W59x9L8xY7w8Y7w2Z9_Z9_Z9_Z9_Z9_Z9_Z9_Z9_Z9_Z9=w240-h480-rw',
+        prices: [
+            { id: 'ff1', name: '70 Diamonds', price: 10000 },
+            { id: 'ff2', name: '140 Diamonds', price: 20000 },
+            { id: 'ff3', name: '355 Diamonds', price: 50000 },
+            { id: 'ff4', name: '720 Diamonds', price: 100000 },
+            { id: 'ff5', name: 'Weekly Membership', price: 30000 }
+        ]
+    },
+    {
+        id: 'pubgm',
+        title: 'PUBG Mobile',
+        publisher: 'Level Infinite',
+        icon: 'https://play-lh.googleusercontent.com/JRd05pyBH4HTBls28O1_o5b08y7G3sZ5xQ_G5wY7w2Z9_Z9_Z9_Z9_Z9_Z9_Z9=w240-h480-rw',
+        prices: [
+            { id: 'pubg1', name: '60 UC', price: 14000 },
+            { id: 'pubg2', name: '325 UC', price: 70000 },
+            { id: 'pubg3', name: '660 UC', price: 140000 },
+            { id: 'pubg4', name: '1800 UC', price: 350000 }
+        ]
+    },
+    {
+        id: 'genshin',
+        title: 'Genshin Impact',
+        publisher: 'HoYoverse',
+        icon: 'https://play-lh.googleusercontent.com/9vY_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y=w240-h480-rw',
+        prices: [
+            { id: 'gi1', name: '60 Genesis Crystals', price: 16000 },
+            { id: 'gi2', name: '300+30 Genesis Crystals', price: 79000 },
+            { id: 'gi3', name: '980+110 Genesis Crystals', price: 249000 },
+            { id: 'gi4', name: 'Blessing of the Welkin Moon', price: 79000 }
+        ]
+    },
+    {
+        id: 'valo',
+        title: 'Valorant',
+        publisher: 'Riot Games',
+        icon: 'https://play-lh.googleusercontent.com/8x8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y=w240-h480-rw',
+        prices: [
+            { id: 'val1', name: '420 VP', price: 50000 },
+            { id: 'val2', name: '700 VP', price: 80000 },
+            { id: 'val3', name: '1375 VP', price: 150000 },
+            { id: 'val4', name: '3400 VP', price: 350000 }
+        ]
+    }
+];
+
+// Fallback Icons if Google Play icons fail to load or look weird
+const fallbackIcons = {
+    'mlbb': 'https://upload.wikimedia.org/wikipedia/en/2/21/Mobile_Legends_Bang_Bang_logo.png',
+    'ff': 'https://upload.wikimedia.org/wikipedia/en/9/93/Free_Fire_logo.png',
+    'pubgm': 'https://upload.wikimedia.org/wikipedia/en/0/05/PUBG_Mobile_logo.png',
+    'genshin': 'https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_logo.png',
+    'valo': 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Valorant_logo_-_pink_color_version.svg'
+};
+
+games.forEach(game => {
+    game.icon = fallbackIcons[game.id] || game.icon;
+});
+
+const WHATSAPP_NUMBER = '6285942510943';
+
+// Format Rupiah
+const formatRupiah = (number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+};
+
+// --- CAROUSEL LOGIC ---
+const carouselImages = [
+    'assets/promo_banner_1_1783375281743.png',
+    'assets/promo_banner_2_1783375295252.png'
+];
+
+const track = document.getElementById('carouselTrack');
+const indicatorsContainer = document.getElementById('carouselIndicators');
+let currentIndex = 0;
+
+function initCarousel() {
+    carouselImages.forEach((src, index) => {
+        // Create Slide
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = `<img src="${src}" alt="Promo Banner ${index + 1}">`;
+        track.appendChild(slide);
+
+        // Create Indicator
+        const dot = document.createElement('div');
+        dot.className = `indicator ${index === 0 ? 'active' : ''}`;
+        dot.addEventListener('click', () => goToSlide(index));
+        indicatorsContainer.appendChild(dot);
+    });
+}
+
+function updateCarousel() {
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    document.querySelectorAll('.indicator').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+    });
+}
+
+function goToSlide(index) {
+    currentIndex = index;
+    updateCarousel();
+}
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % carouselImages.length;
+    updateCarousel();
+});
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + carouselImages.length) % carouselImages.length;
+    updateCarousel();
+});
+
+// Auto slide
+setInterval(() => {
+    currentIndex = (currentIndex + 1) % carouselImages.length;
+    updateCarousel();
+}, 5000);
+
+
+// --- GAME GRID LOGIC ---
+const gameGrid = document.getElementById('gameGrid');
+
+function initGames() {
+    games.forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `
+            <img src="${game.icon}" alt="${game.title}">
+            <h3>${game.title}</h3>
+            <p>${game.publisher}</p>
+        `;
+        card.addEventListener('click', () => openModal(game));
+        gameGrid.appendChild(card);
+    });
+}
+
+// --- MODAL & PRICELIST LOGIC ---
+const modal = document.getElementById('priceModal');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const pricelistGrid = document.getElementById('pricelistGrid');
+const orderSummary = document.getElementById('orderSummary');
+const btnWhatsapp = document.getElementById('btnWhatsapp');
+
+let selectedGame = null;
+let selectedPrice = null;
+
+function openModal(game) {
+    selectedGame = game;
+    selectedPrice = null; // reset selection
+    
+    document.getElementById('modalGameIcon').src = game.icon;
+    document.getElementById('modalGameTitle').textContent = game.title;
+    document.getElementById('modalGamePublisher').textContent = game.publisher;
+    
+    // Render prices
+    pricelistGrid.innerHTML = '';
+    game.prices.forEach(priceItem => {
+        const card = document.createElement('div');
+        card.className = 'price-card';
+        card.innerHTML = `
+            <span class="price-item">${priceItem.name}</span>
+            <span class="price-value">${formatRupiah(priceItem.price)}</span>
+        `;
+        card.addEventListener('click', () => selectPrice(card, priceItem));
+        pricelistGrid.appendChild(card);
+    });
+
+    orderSummary.style.display = 'none';
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function selectPrice(cardElement, priceItem) {
+    // Remove active class from all
+    document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
+    // Add active class to selected
+    cardElement.classList.add('selected');
+    
+    selectedPrice = priceItem;
+    
+    // Update Order Summary
+    document.getElementById('summaryItem').textContent = priceItem.name;
+    document.getElementById('summaryPrice').textContent = formatRupiah(priceItem.price);
+    orderSummary.style.display = 'block';
+}
+
+closeModalBtn.addEventListener('click', () => {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+});
+
+// Close modal when clicking outside content
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+});
+
+
+// --- WHATSAPP REDIRECT ---
+btnWhatsapp.addEventListener('click', () => {
+    if (!selectedGame || !selectedPrice) return;
+    
+    const text = `Halo Admin NexusTopup, saya ingin order topup:\n\n*Game:* ${selectedGame.title}\n*Item:* ${selectedPrice.name}\n*Harga:* ${formatRupiah(selectedPrice.price)}\n\nMohon info pembayaran. Terima kasih.`;
+    const encodedText = encodeURIComponent(text);
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
+    
+    window.open(waUrl, '_blank');
+});
+
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initCarousel();
+    initGames();
+});
