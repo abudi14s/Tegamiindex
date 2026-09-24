@@ -4,7 +4,7 @@ const games = [
         id: 'mlbb',
         title: 'Mobile Legends',
         publisher: 'Moonton',
-        icon: 'https://play-lh.googleusercontent.com/ER-A9Lw3l5U8K4w7t1T3wUjYq9Z0O_w5_q1yT_vG98_v1l-0H2v_v-H1h9K9_R4=w240-h480-rw',
+        icon: 'assets/games/mlbb/icon.webp',
         prices: [
             { id: 'ml1', name: '86 Diamonds', price: 23000 },
             { id: 'ml2', name: '172 Diamonds', price: 46000 },
@@ -18,7 +18,7 @@ const games = [
         id: 'ff',
         title: 'Free Fire',
         publisher: 'Garena',
-        icon: 'https://play-lh.googleusercontent.com/NE5Tj_b5_y2_k_W59x9L8xY7w8Y7w2Z9_Z9_Z9_Z9_Z9_Z9_Z9_Z9_Z9_Z9=w240-h480-rw',
+        icon: 'assets/games/ff/icon.webp',
         prices: [
             { id: 'ff1', name: '70 Diamonds', price: 10000 },
             { id: 'ff2', name: '140 Diamonds', price: 20000 },
@@ -31,7 +31,7 @@ const games = [
         id: 'pubgm',
         title: 'PUBG Mobile',
         publisher: 'Level Infinite',
-        icon: 'https://play-lh.googleusercontent.com/JRd05pyBH4HTBls28O1_o5b08y7G3sZ5xQ_G5wY7w2Z9_Z9_Z9_Z9_Z9_Z9_Z9=w240-h480-rw',
+        icon: 'assets/games/pubgm/icon.webp',
         prices: [
             { id: 'pubg1', name: '60 UC', price: 14000 },
             { id: 'pubg2', name: '325 UC', price: 70000 },
@@ -43,7 +43,7 @@ const games = [
         id: 'genshin',
         title: 'Genshin Impact',
         publisher: 'HoYoverse',
-        icon: 'https://play-lh.googleusercontent.com/9vY_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y=w240-h480-rw',
+        icon: 'assets/games/genshin/icon.webp',
         prices: [
             { id: 'gi1', name: '60 Genesis Crystals', price: 16000 },
             { id: 'gi2', name: '300+30 Genesis Crystals', price: 79000 },
@@ -55,28 +55,28 @@ const games = [
         id: 'valo',
         title: 'Valorant',
         publisher: 'Riot Games',
-        icon: 'https://play-lh.googleusercontent.com/8x8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y_8y=w240-h480-rw',
+        icon: 'assets/games/valo/icon.webp',
         prices: [
             { id: 'val1', name: '420 VP', price: 50000 },
             { id: 'val2', name: '700 VP', price: 80000 },
             { id: 'val3', name: '1375 VP', price: 150000 },
             { id: 'val4', name: '3400 VP', price: 350000 }
         ]
+    },
+    {
+        id: 'roblox',
+        title: 'Roblox',
+        publisher: 'Roblox Corporation',
+        icon: 'assets/games/roblox/icon.webp',
+        prices: [
+            { id: 'rbx1', name: '80 Robux', price: 15000 },
+            { id: 'rbx2', name: '400 Robux', price: 75000 },
+            { id: 'rbx3', name: '800 Robux', price: 150000 },
+            { id: 'rbx4', name: '1700 Robux', price: 300000 },
+            { id: 'rbx5', name: 'Premium 450', price: 75000 }
+        ]
     }
 ];
-
-// Fallback Icons if Google Play icons fail to load or look weird
-const fallbackIcons = {
-    'mlbb': 'https://upload.wikimedia.org/wikipedia/en/2/21/Mobile_Legends_Bang_Bang_logo.png',
-    'ff': 'https://upload.wikimedia.org/wikipedia/en/9/93/Free_Fire_logo.png',
-    'pubgm': 'https://upload.wikimedia.org/wikipedia/en/0/05/PUBG_Mobile_logo.png',
-    'genshin': 'https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_logo.png',
-    'valo': 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Valorant_logo_-_pink_color_version.svg'
-};
-
-games.forEach(game => {
-    game.icon = fallbackIcons[game.id] || game.icon;
-});
 
 const WHATSAPP_NUMBER = '6285942510943';
 
