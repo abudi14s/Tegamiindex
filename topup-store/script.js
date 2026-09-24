@@ -75,6 +75,66 @@ const games = [
             { id: 'rbx4', name: '1700 Robux', price: 300000 },
             { id: 'rbx5', name: 'Premium 450', price: 75000 }
         ]
+    },
+    {
+        id: 'hsr',
+        title: 'Honkai: Star Rail',
+        publisher: 'HoYoverse',
+        icon: 'assets/games/hsr/icon.webp',
+        prices: [
+            { id: 'hsr1', name: '60 Oneiric Shard', price: 16000 },
+            { id: 'hsr2', name: '300+30 Oneiric Shard', price: 79000 },
+            { id: 'hsr3', name: '980+110 Oneiric Shard', price: 249000 },
+            { id: 'hsr4', name: 'Express Supply Pass', price: 79000 }
+        ]
+    },
+    {
+        id: 'hi3',
+        title: 'Honkai Impact 3rd',
+        publisher: 'HoYoverse',
+        icon: 'assets/games/hi3/icon.webp',
+        prices: [
+            { id: 'hi1', name: '65 Crystals', price: 16000 },
+            { id: 'hi2', name: '330 Crystals', price: 79000 },
+            { id: 'hi3', name: '710 Crystals', price: 159000 },
+            { id: 'hi4', name: 'Monthly Card', price: 79000 }
+        ]
+    },
+    {
+        id: 'hok',
+        title: 'Honor of Kings',
+        publisher: 'Level Infinite',
+        icon: 'assets/games/hok/icon.webp',
+        prices: [
+            { id: 'hok1', name: '16 Tokens', price: 4000 },
+            { id: 'hok2', name: '80 Tokens', price: 16000 },
+            { id: 'hok3', name: '240 Tokens', price: 49000 },
+            { id: 'hok4', name: 'Weekly Card', price: 16000 }
+        ]
+    },
+    {
+        id: 'zzz',
+        title: 'Zenless Zone Zero',
+        publisher: 'HoYoverse',
+        icon: 'assets/games/zzz/icon.webp',
+        prices: [
+            { id: 'zzz1', name: '60 Monochromes', price: 16000 },
+            { id: 'zzz2', name: '300 Monochromes', price: 79000 },
+            { id: 'zzz3', name: '980 Monochromes', price: 249000 },
+            { id: 'zzz4', name: 'Inter-Knot Membership', price: 79000 }
+        ]
+    },
+    {
+        id: 'wuwa',
+        title: 'Wuthering Waves',
+        publisher: 'Kuro Games',
+        icon: 'assets/games/wuwa/icon.webp',
+        prices: [
+            { id: 'wuwa1', name: '60 Lunites', price: 16000 },
+            { id: 'wuwa2', name: '300 Lunites', price: 79000 },
+            { id: 'wuwa3', name: '980 Lunites', price: 249000 },
+            { id: 'wuwa4', name: 'Lunite Subscription', price: 79000 }
+        ]
     }
 ];
 
