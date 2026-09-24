@@ -204,6 +204,9 @@ setInterval(() => {
 const gameGrid = document.getElementById('gameGrid');
 
 function initGames() {
+    // Urutkan game berdasarkan abjad (A-Z)
+    games.sort((a, b) => a.title.localeCompare(b.title));
+    
     games.forEach(game => {
         const card = document.createElement('div');
         card.className = 'game-card';
