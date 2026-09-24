@@ -216,8 +216,8 @@ btnWhatsapp.addEventListener('click', () => {
     const text = `Halo Admin Tegamiindex, saya ingin order topup:\n\n*Game:* ${selectedGame.title}\n*Item:* ${selectedPrice.name}\n*Harga:* ${formatRupiah(selectedPrice.price)}\n\nMohon info pembayaran. Terima kasih.`;
     const encodedText = encodeURIComponent(text);
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
-    
-    window.open(waUrl, '_blank');
+    // Menggunakan window.location.href agar lebih aman di HP dan tidak terblokir Popup Blocker
+    window.location.href = waUrl;
 });
 
 
