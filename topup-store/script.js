@@ -11,8 +11,28 @@ const formatRupiah = (number) => {
 // --- GOOGLE SHEETS LOGIC ---
 async function loadGamesFromSheet() {
     try {
-        const response = await fetch(SHEET_CSV_URL);
-        const data = await response.text();
+        let data = '';
+        const CACHE_KEY = 'tegamiindex_pricelist_data';
+        const CACHE_TIME_KEY = 'tegamiindex_pricelist_time';
+        const CACHE_DURATION = 10 * 60 * 1000; // 10 menit (dalam milidetik)
+        
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cacheTime = localStorage.getItem(CACHE_TIME_KEY);
+        
+        // Cek apakah data tersimpan di cache dan umurnya belum 10 menit
+        if (cachedData && cacheTime && (Date.now() - parseInt(cacheTime) < CACHE_DURATION)) {
+            data = cachedData;
+            console.log('Memuat harga dari Cache Lokal (Super Cepat ⚡)');
+        } else {
+            // Ambil data baru dari Google Sheets
+            const response = await fetch(SHEET_CSV_URL);
+            data = await response.text();
+            
+            // Simpan ke cache
+            localStorage.setItem(CACHE_KEY, data);
+            localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+            console.log('Mengunduh harga terbaru dari Google Sheets 📡');
+        }
         
         const rows = data.split('\n').map(row => row.trim()).filter(row => row.length > 0);
         const gameMap = new Map();
@@ -70,7 +90,7 @@ async function loadGamesFromSheet() {
         initGames(); // Render game setelah data berhasil diambil
         
     } catch (error) {
-        console.error('Gagal mengambil data dari Google Sheets:', error);
+        console.error('Gagal mengambil data:', error);
         document.getElementById('gameGrid').innerHTML = '<p style="text-align:center;width:100%">Gagal memuat data harga dari sistem. Coba muat ulang halaman.</p>';
     }
 }
