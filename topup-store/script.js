@@ -97,8 +97,8 @@ async function loadGamesFromSheet() {
 
 // --- CAROUSEL LOGIC ---
 const carouselImages = [
-    'assets/promo_banner_1_1783375281743.png',
-    'assets/promo_banner_2_1783375295252.png'
+    'assets/banner-1.webp',
+    'assets/banner-2.webp'
 ];
 
 const track = document.getElementById('carouselTrack');
