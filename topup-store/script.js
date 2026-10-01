@@ -249,17 +249,32 @@ modal.addEventListener('click', (e) => {
 const userAuthContainer = document.getElementById('userAuthContainer');
 
 function loginWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
+    console.log('Tombol Login diklik, memulai redirect...');
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithRedirect(provider).catch((error) => {
+            console.error('Error saat signInWithRedirect:', error);
+            if (error.code === 'auth/operation-not-allowed') {
+                alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di menu Authentication -> Sign-in method.');
+            } else {
+                alert('Gagal login: ' + error.message);
+            }
+        });
+    } catch (e) {
+        console.error('Exception saat login:', e);
+        alert('Terjadi kesalahan: ' + e.message);
+    }
 }
 
-// Cek jika ada error dari hasil redirect
+// Cek jika ada error dari hasil redirect sebelumnya
 auth.getRedirectResult().catch((error) => {
-    console.error('Redirect Login error:', error);
-    if (error && error.code === 'auth/operation-not-allowed') {
-        alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan terlebih dahulu di menu Authentication -> Sign-in method.');
-    } else if (error && error.message) {
-        alert('Gagal login: ' + error.message);
+    if (error && error.code) {
+        console.error('Redirect Login error:', error);
+        if (error.code === 'auth/operation-not-allowed') {
+            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan terlebih dahulu di menu Authentication -> Sign-in method.');
+        } else {
+            alert('Gagal login: ' + error.message);
+        }
     }
 });
 
@@ -267,10 +282,17 @@ function logout() {
     auth.signOut();
 }
 
+// Pasang listener awal langsung saat script dimuat
+const initialLoginBtn = document.getElementById('btnLoginGoogle');
+if (initialLoginBtn) {
+    initialLoginBtn.addEventListener('click', loginWithGoogle);
+}
+
 auth.onAuthStateChanged((user) => {
     if (!userAuthContainer) return;
     
     if (user) {
+        console.log('Pengguna terautentikasi:', user.displayName);
         const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=8b5cf6&color=fff`;
         const displayName = user.displayName ? user.displayName.split(' ')[0] : 'User';
         
@@ -284,8 +306,10 @@ auth.onAuthStateChanged((user) => {
             </div>
         `;
         
-        document.getElementById('btnLogout').addEventListener('click', logout);
+        const btnLogout = document.getElementById('btnLogout');
+        if (btnLogout) btnLogout.addEventListener('click', logout);
     } else {
+        console.log('Pengguna dalam status keluar (Guest)');
         userAuthContainer.innerHTML = `
             <button class="btn-login-google" id="btnLoginGoogle">
                 <i class="ph-bold ph-google-logo"></i>
@@ -293,7 +317,8 @@ auth.onAuthStateChanged((user) => {
             </button>
         `;
         
-        document.getElementById('btnLoginGoogle').addEventListener('click', loginWithGoogle);
+        const btnLogin = document.getElementById('btnLoginGoogle');
+        if (btnLogin) btnLogin.addEventListener('click', loginWithGoogle);
     }
 });
 
