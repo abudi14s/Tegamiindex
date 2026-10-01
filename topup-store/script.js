@@ -245,11 +245,67 @@ modal.addEventListener('click', (e) => {
 });
 
 
+// --- FIREBASE AUTHENTICATION LOGIC ---
+const userAuthContainer = document.getElementById('userAuthContainer');
+
+function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch((error) => {
+        console.error('Login error:', error);
+        if (error.code === 'auth/operation-not-allowed') {
+            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan terlebih dahulu di menu Authentication -> Sign-in method.');
+        } else {
+            alert('Gagal login: ' + error.message);
+        }
+    });
+}
+
+function logout() {
+    auth.signOut();
+}
+
+auth.onAuthStateChanged((user) => {
+    if (!userAuthContainer) return;
+    
+    if (user) {
+        const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=8b5cf6&color=fff`;
+        const displayName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+        
+        userAuthContainer.innerHTML = `
+            <div class="user-profile">
+                <img src="${avatarUrl}" alt="${displayName}" class="user-avatar">
+                <span class="user-name">${displayName}</span>
+                <button class="btn-logout" id="btnLogout" title="Keluar">
+                    <i class="ph-bold ph-sign-out"></i>
+                </button>
+            </div>
+        `;
+        
+        document.getElementById('btnLogout').addEventListener('click', logout);
+    } else {
+        userAuthContainer.innerHTML = `
+            <button class="btn-login-google" id="btnLoginGoogle">
+                <i class="ph-bold ph-google-logo"></i>
+                <span>Masuk</span>
+            </button>
+        `;
+        
+        document.getElementById('btnLoginGoogle').addEventListener('click', loginWithGoogle);
+    }
+});
+
+
 // --- WHATSAPP REDIRECT ---
 btnWhatsapp.addEventListener('click', () => {
     if (!selectedGame || !selectedPrice) return;
     
-    const text = `Halo Admin Tegamiindex, saya ingin order topup:\n\n*Game:* ${selectedGame.title}\n*Item:* ${selectedPrice.name}\n*Harga:* ${formatRupiah(selectedPrice.price)}\n\nMohon info pembayaran. Terima kasih.`;
+    let userText = '';
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+        userText = `\n*Pembeli:* ${currentUser.displayName || currentUser.email}`;
+    }
+    
+    const text = `Halo Admin Tegamiindex, saya ingin order topup:${userText}\n\n*Game:* ${selectedGame.title}\n*Item:* ${selectedPrice.name}\n*Harga:* ${formatRupiah(selectedPrice.price)}\n\nMohon info pembayaran. Terima kasih.`;
     const encodedText = encodeURIComponent(text);
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedText}`;
     // Menggunakan window.location.href agar lebih aman di HP dan tidak terblokir Popup Blocker
