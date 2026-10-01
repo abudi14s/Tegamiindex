@@ -1,3 +1,19 @@
+// --- FIREBASE CONFIG & INITIALIZATION ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBADrx1kcS9Q0d8FKR7CFzjfuZdRI9lvj4",
+  authDomain: "tegamiindex-store.firebaseapp.com",
+  projectId: "tegamiindex-store",
+  storageBucket: "tegamiindex-store.firebasestorage.app",
+  messagingSenderId: "947060910439",
+  appId: "1:947060910439:web:f9727b650060ea375967c2",
+  measurementId: "G-7KDTQ8TL4R"
+};
+
+// Inisialisasi Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 // Data Games dari Google Sheets
 let games = [];
 const WHATSAPP_NUMBER = '6285942510943';
