@@ -282,7 +282,7 @@ function updateUserUI(user) {
         const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=8b5cf6&color=fff`;
         
         userAuthContainer.innerHTML = `
-            <div class="user-profile">
+            <div class="user-profile user-profile-clickable" id="btnOpenProfile" title="Edit Profil">
                 <img src="${avatarUrl}" alt="${firstName}" class="user-avatar" onerror="this.src='https://ui-avatars.com/api/?name=User&background=8b5cf6&color=fff'">
                 <span class="user-name">${firstName}</span>
                 <button class="btn-logout" id="btnLogout" title="Keluar">
@@ -290,6 +290,14 @@ function updateUserUI(user) {
                 </button>
             </div>
         `;
+        
+        const btnOpenProfile = document.getElementById('btnOpenProfile');
+        if (btnOpenProfile) {
+            btnOpenProfile.onclick = (e) => {
+                if (e.target.closest('#btnLogout')) return;
+                openProfileModal();
+            };
+        }
         
         const btnLogout = document.getElementById('btnLogout');
         if (btnLogout) {
@@ -309,6 +317,116 @@ function updateUserUI(user) {
             btnLogin.onclick = loginWithGoogle;
         }
     }
+}
+
+// --- PROFILE EDIT MODAL LOGIC ---
+const profileModal = document.getElementById('profileModal');
+const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+const profileForm = document.getElementById('profileForm');
+const editAvatarPreview = document.getElementById('editAvatarPreview');
+const inputAvatarFile = document.getElementById('inputAvatarFile');
+const inputDisplayName = document.getElementById('inputDisplayName');
+const uploadFileName = document.getElementById('uploadFileName');
+
+let newAvatarBase64 = null;
+
+function openProfileModal() {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    newAvatarBase64 = null;
+    const name = user.displayName || user.email || '';
+    inputDisplayName.value = name;
+    
+    const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=8b5cf6&color=fff`;
+    editAvatarPreview.src = avatarUrl;
+    uploadFileName.textContent = 'Format JPG/PNG/WEBP (Maks 1MB)';
+    inputAvatarFile.value = '';
+    
+    profileModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProfileModal() {
+    profileModal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+if (closeProfileModalBtn) {
+    closeProfileModalBtn.addEventListener('click', closeProfileModal);
+}
+
+if (profileModal) {
+    profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal) {
+            closeProfileModal();
+        }
+    });
+}
+
+// Pratinjau dan Validasi Ukuran File Foto (Maksimal 1MB)
+if (inputAvatarFile) {
+    inputAvatarFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Cek ukuran file (1MB = 1024 * 1024 bytes)
+        if (file.size > 1 * 1024 * 1024) {
+            alert('Ukuran foto terlalu besar! Maksimal 1MB.');
+            inputAvatarFile.value = '';
+            uploadFileName.textContent = 'Ukuran file melebihi 1MB! Pilih foto lain.';
+            return;
+        }
+        
+        uploadFileName.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            newAvatarBase64 = evt.target.result;
+            editAvatarPreview.src = newAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Proses Simpan Profil ke Firebase Auth
+if (profileForm) {
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+        
+        const newName = inputDisplayName.value.trim();
+        if (!newName) {
+            alert('Nama tampilan tidak boleh kosong.');
+            return;
+        }
+        
+        const updateData = {
+            displayName: newName
+        };
+        
+        if (newAvatarBase64) {
+            updateData.photoURL = newAvatarBase64;
+        }
+        
+        const btnSave = document.getElementById('btnSaveProfile');
+        btnSave.disabled = true;
+        btnSave.innerHTML = '<i class="ph-bold ph-spinner"></i> Menyimpan...';
+        
+        try {
+            await user.updateProfile(updateData);
+            alert('Profil berhasil diperbarui!');
+            closeProfileModal();
+            updateUserUI(auth.currentUser);
+        } catch (error) {
+            console.error('Error update profile:', error);
+            alert('Gagal memperbarui profil: ' + error.message);
+        } finally {
+            btnSave.disabled = false;
+            btnSave.innerHTML = '<i class="ph-bold ph-floppy-disk"></i> Simpan Perubahan';
+        }
+    });
 }
 
 function loginWithGoogle() {

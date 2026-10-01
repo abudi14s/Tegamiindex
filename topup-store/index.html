@@ -87,6 +87,39 @@
         </div>
     </div>
 
+    <!-- User Profile Edit Modal -->
+    <div class="modal-backdrop" id="profileModal">
+        <div class="modal-content glass-panel">
+            <button class="close-modal" id="closeProfileModalBtn"><i class="ph-bold ph-x"></i></button>
+            
+            <div class="modal-header">
+                <h3>Pengaturan Profil Member</h3>
+            </div>
+
+            <form id="profileForm" class="profile-form">
+                <div class="profile-avatar-upload">
+                    <img id="editAvatarPreview" src="" alt="Avatar Preview" class="edit-avatar-preview">
+                    <label for="inputAvatarFile" class="btn-upload-label">
+                        <i class="ph-bold ph-upload-simple"></i> Pilih Foto (Maks 1MB)
+                    </label>
+                    <input type="file" id="inputAvatarFile" accept="image/*" style="display: none;">
+                    <span id="uploadFileName" class="file-name-hint">Format JPG/PNG/WEBP (Maks 1MB)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDisplayName">Nama Tampilan</label>
+                    <input type="text" id="inputDisplayName" class="form-input" placeholder="Masukkan nama tampilan" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save-profile" id="btnSaveProfile">
+                        <i class="ph-bold ph-floppy-disk"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 Tegamiindex. All Rights Reserved.</p>
     </footer>
