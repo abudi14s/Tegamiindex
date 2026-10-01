@@ -272,17 +272,57 @@ modal.addEventListener('click', (e) => {
 // --- FIREBASE AUTHENTICATION LOGIC ---
 const userAuthContainer = document.getElementById('userAuthContainer');
 
+function updateUserUI(user) {
+    if (!userAuthContainer) return;
+    
+    if (user) {
+        console.log('User logged in:', user.displayName || user.email);
+        const name = user.displayName || user.email || 'User';
+        const firstName = name.split(' ')[0];
+        const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=8b5cf6&color=fff`;
+        
+        userAuthContainer.innerHTML = `
+            <div class="user-profile">
+                <img src="${avatarUrl}" alt="${firstName}" class="user-avatar" onerror="this.src='https://ui-avatars.com/api/?name=User&background=8b5cf6&color=fff'">
+                <span class="user-name">${firstName}</span>
+                <button class="btn-logout" id="btnLogout" title="Keluar">
+                    <i class="ph-bold ph-sign-out"></i>
+                </button>
+            </div>
+        `;
+        
+        const btnLogout = document.getElementById('btnLogout');
+        if (btnLogout) {
+            btnLogout.onclick = logout;
+        }
+    } else {
+        console.log('User logged out / Guest');
+        userAuthContainer.innerHTML = `
+            <button class="btn-login-google" id="btnLoginGoogle">
+                <i class="ph-bold ph-google-logo"></i>
+                <span>Masuk</span>
+            </button>
+        `;
+        
+        const btnLogin = document.getElementById('btnLoginGoogle');
+        if (btnLogin) {
+            btnLogin.onclick = loginWithGoogle;
+        }
+    }
+}
+
 function loginWithGoogle() {
     console.log('Memulai proses login...');
     const provider = new firebase.auth.GoogleAuthProvider();
     
-    // Coba Popup terlebih dahulu (karena klik langsung tidak diblokir di browser modern)
     auth.signInWithPopup(provider).then((result) => {
-        console.log('Login Popup Berhasil:', result.user.displayName);
+        console.log('Login Popup Berhasil:', result.user);
+        alert('Selamat datang, ' + (result.user.displayName || 'Member') + '!');
+        updateUserUI(result.user);
     }).catch((error) => {
-        console.warn('Popup gagal atau diblokir, beralih ke Redirect:', error);
+        console.warn('Popup gagal atau diblokir:', error);
         if (error.code === 'auth/operation-not-allowed') {
-            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di menu Authentication -> Sign-in method.');
+            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di Authentication -> Sign-in method.');
         } else if (error.code === 'auth/unauthorized-domain') {
             alert('Domain Vercel Anda belum terdaftar di Firebase! Buka Firebase Console -> Authentication -> Settings -> Authorized domains dan tambahkan domain Vercel Anda.');
         } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
@@ -293,12 +333,20 @@ function loginWithGoogle() {
     });
 }
 
-// Cek jika ada error dari hasil redirect sebelumnya
-auth.getRedirectResult().catch((error) => {
+// Tangkap hasil redirect jika popup diblokir dan menggunakan redirect
+auth.getRedirectResult().then((result) => {
+    if (result && result.user) {
+        console.log('Redirect Login berhasil:', result.user);
+        alert('Selamat datang kembali, ' + (result.user.displayName || 'Member') + '!');
+        updateUserUI(result.user);
+    }
+}).catch((error) => {
     if (error && error.code) {
         console.error('Redirect Login error:', error);
         if (error.code === 'auth/operation-not-allowed') {
-            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan terlebih dahulu di menu Authentication -> Sign-in method.');
+            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di Authentication -> Sign-in method.');
+        } else if (error.code === 'auth/unauthorized-domain') {
+            alert('Domain Vercel Anda belum terdaftar di Firebase!');
         } else {
             alert('Gagal login: ' + error.message);
         }
@@ -306,47 +354,20 @@ auth.getRedirectResult().catch((error) => {
 });
 
 function logout() {
-    auth.signOut();
+    auth.signOut().then(() => {
+        alert('Anda telah keluar.');
+        updateUserUI(null);
+    });
 }
 
-// Pasang listener awal langsung saat script dimuat
+// Inisialisasi awal listener
 const initialLoginBtn = document.getElementById('btnLoginGoogle');
 if (initialLoginBtn) {
-    initialLoginBtn.addEventListener('click', loginWithGoogle);
+    initialLoginBtn.onclick = loginWithGoogle;
 }
 
 auth.onAuthStateChanged((user) => {
-    if (!userAuthContainer) return;
-    
-    if (user) {
-        console.log('Pengguna terautentikasi:', user.displayName);
-        const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=8b5cf6&color=fff`;
-        const displayName = user.displayName ? user.displayName.split(' ')[0] : 'User';
-        
-        userAuthContainer.innerHTML = `
-            <div class="user-profile">
-                <img src="${avatarUrl}" alt="${displayName}" class="user-avatar">
-                <span class="user-name">${displayName}</span>
-                <button class="btn-logout" id="btnLogout" title="Keluar">
-                    <i class="ph-bold ph-sign-out"></i>
-                </button>
-            </div>
-        `;
-        
-        const btnLogout = document.getElementById('btnLogout');
-        if (btnLogout) btnLogout.addEventListener('click', logout);
-    } else {
-        console.log('Pengguna dalam status keluar (Guest)');
-        userAuthContainer.innerHTML = `
-            <button class="btn-login-google" id="btnLoginGoogle">
-                <i class="ph-bold ph-google-logo"></i>
-                <span>Masuk</span>
-            </button>
-        `;
-        
-        const btnLogin = document.getElementById('btnLoginGoogle');
-        if (btnLogin) btnLogin.addEventListener('click', loginWithGoogle);
-    }
+    updateUserUI(user);
 });
 
 
