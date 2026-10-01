@@ -250,15 +250,18 @@ const userAuthContainer = document.getElementById('userAuthContainer');
 
 function loginWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch((error) => {
-        console.error('Login error:', error);
-        if (error.code === 'auth/operation-not-allowed') {
-            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan terlebih dahulu di menu Authentication -> Sign-in method.');
-        } else {
-            alert('Gagal login: ' + error.message);
-        }
-    });
+    auth.signInWithRedirect(provider);
 }
+
+// Cek jika ada error dari hasil redirect
+auth.getRedirectResult().catch((error) => {
+    console.error('Redirect Login error:', error);
+    if (error && error.code === 'auth/operation-not-allowed') {
+        alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan terlebih dahulu di menu Authentication -> Sign-in method.');
+    } else if (error && error.message) {
+        alert('Gagal login: ' + error.message);
+    }
+});
 
 function logout() {
     auth.signOut();
