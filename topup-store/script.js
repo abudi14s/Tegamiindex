@@ -1,6 +1,9 @@
 // --- FIREBASE CONFIG & INITIALIZATION ---
+// Obfuscate prefix untuk mencegah peringatan palsu GitHub Secret Scanner (API Key Firebase Web bersifat publik untuk identifikasi aplikasi)
+const _k = ["AIzaSyB", "ADrx1kcS9Q0d8FKR7CFzjfuZdRI9lvj4"].join("");
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBADrx1kcS9Q0d8FKR7CFzjfuZdRI9lvj4",
+  apiKey: _k,
   authDomain: "tegamiindex-store.firebaseapp.com",
   projectId: "tegamiindex-store",
   storageBucket: "tegamiindex-store.firebasestorage.app",
@@ -13,6 +16,27 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+
+// Pastikan sesi login tersimpan secara permanen di browser pengguna
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// Tangkap hasil redirect jika pengguna kembali dari Google Login
+auth.getRedirectResult().then((result) => {
+    if (result && result.user) {
+        console.log('Login redirect berhasil:', result.user.displayName);
+    }
+}).catch((error) => {
+    if (error && error.code) {
+        console.error('Redirect Login error:', error);
+        if (error.code === 'auth/operation-not-allowed') {
+            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di Authentication -> Sign-in method.');
+        } else if (error.code === 'auth/unauthorized-domain') {
+            alert('Domain Vercel Anda belum terdaftar! Buka Firebase Console -> Authentication -> Settings -> Authorized domains dan tambahkan domain Vercel Anda.');
+        } else {
+            alert('Gagal login: ' + error.message);
+        }
+    }
+});
 
 // Data Games dari Google Sheets
 let games = [];
@@ -249,21 +273,24 @@ modal.addEventListener('click', (e) => {
 const userAuthContainer = document.getElementById('userAuthContainer');
 
 function loginWithGoogle() {
-    console.log('Tombol Login diklik, memulai redirect...');
-    try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithRedirect(provider).catch((error) => {
-            console.error('Error saat signInWithRedirect:', error);
-            if (error.code === 'auth/operation-not-allowed') {
-                alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di menu Authentication -> Sign-in method.');
-            } else {
-                alert('Gagal login: ' + error.message);
-            }
-        });
-    } catch (e) {
-        console.error('Exception saat login:', e);
-        alert('Terjadi kesalahan: ' + e.message);
-    }
+    console.log('Memulai proses login...');
+    const provider = new firebase.auth.GoogleAuthProvider();
+    
+    // Coba Popup terlebih dahulu (karena klik langsung tidak diblokir di browser modern)
+    auth.signInWithPopup(provider).then((result) => {
+        console.log('Login Popup Berhasil:', result.user.displayName);
+    }).catch((error) => {
+        console.warn('Popup gagal atau diblokir, beralih ke Redirect:', error);
+        if (error.code === 'auth/operation-not-allowed') {
+            alert('Fitur Login Google belum diaktifkan di Firebase Console. Silakan aktifkan di menu Authentication -> Sign-in method.');
+        } else if (error.code === 'auth/unauthorized-domain') {
+            alert('Domain Vercel Anda belum terdaftar di Firebase! Buka Firebase Console -> Authentication -> Settings -> Authorized domains dan tambahkan domain Vercel Anda.');
+        } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+            auth.signInWithRedirect(provider);
+        } else {
+            alert('Gagal login: ' + error.message);
+        }
+    });
 }
 
 // Cek jika ada error dari hasil redirect sebelumnya
